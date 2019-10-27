@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Overcast
+
+This React project is designed to serve as a New Tab page to display the current time and weather.
 
 ## Available Scripts
 
