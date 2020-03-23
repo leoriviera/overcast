@@ -1,16 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import * as Sentry from "@sentry/browser";
 
-import './index.scss';
-import 'animate.css/source/_base.css';
-import 'animate.css/source/fading_entrances/fadeIn.css';
-import 'animate.css/source/sliding_entrances/slideInUp.css';
-import 'animate.css/source/sliding_exits/slideOutDown.css';
+import config from "./config";
 
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import "./index.scss";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+
+Sentry.init({ dsn: config.SENTRY_DSN });
+
+ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
