@@ -9,6 +9,8 @@ $tooltip-font-size: $size-6;
 
 @import "@creativebulma/bulma-tooltip";
 
+@import "~animate.css/animate.css";
+
 html {
     overflow: hidden;
     user-select: none;

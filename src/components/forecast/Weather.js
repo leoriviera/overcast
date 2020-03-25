@@ -1,8 +1,9 @@
 import React, { createRef, useEffect } from "react";
-import { Columns, Column, Subtitle } from "bloomer";
+import { Columns, Column, Subtitle, Level } from "bloomer";
 
 import moment from "moment";
-import ReactLoading from "react-loading";
+import { BeatLoader } from "react-spinners";
+import Animate from "animate.css-react";
 const Skycons = require("skycons")(window);
 
 // Create Skycon
@@ -32,7 +33,7 @@ const Skycon = ({ iconName, description, color }) => {
     );
 };
 
-const Weather = ({ colour: color, forecast, error }) => {
+const Weather = ({ colour: color, forecast, coords, error }) => {
     let iconDict = {
         200: "thunder-rain",
         201: "thunder-rain",
@@ -91,16 +92,18 @@ const Weather = ({ colour: color, forecast, error }) => {
         804: "cloudy"
     };
 
-    let message = "";
+    let message = null;
+    let location = null;
     let loading = null;
 
     // If there is no error...
     if (error === null) {
         // Set loading message
-        message = "Loading Forecast...";
         loading = (
-            <Columns isCentered>
-                <ReactLoading type='spin' color={color} />
+            <Columns>
+                <Column>
+                    <BeatLoader color={color} />
+                </Column>
             </Columns>
         );
     }
@@ -114,74 +117,96 @@ const Weather = ({ colour: color, forecast, error }) => {
 
     // Create forecast content, with message
     let forecastContent = (
-        <Column>
-            <Subtitle isSize={4} style={{ color }}>
-                {message}
-            </Subtitle>
-        </Column>
+        <Columns>
+            <Column>
+                <Subtitle isSize={4} style={{ color }}>
+                    {message}
+                </Subtitle>
+            </Column>
+        </Columns>
     );
 
     // If there is a forecast...
     if (forecast) {
         // Replace forecast content with forecast
-        forecastContent = forecast.map((forecast, days) => {
-            // Destructure forecast
-            let {
-                dt,
-                weather,
-                main: { temp_min, temp_max }
-            } = forecast;
+        forecastContent = (
+            <Columns isCentered isHidden='mobile'>
+                {forecast.map((forecast, days) => {
+                    // Destructure forecast
+                    let {
+                        dt,
+                        weather,
+                        main: { temp_min, temp_max }
+                    } = forecast;
 
-            // Round the temperatures to nearest integer
-            temp_min = Math.round(temp_min);
-            temp_max = Math.round(temp_max);
+                    // Round the temperatures to nearest integer
+                    temp_min = Math.round(temp_min);
+                    temp_max = Math.round(temp_max);
 
-            // Extract weather status ID, and description
-            let { id, description } = weather[0];
+                    // Extract weather status ID, and description
+                    let { id, description } = weather[0];
 
-            // Get the name of icon
-            let iconName = iconDict[id];
+                    // Get the name of icon
+                    let iconName = iconDict[id];
 
-            return (
-                <Column key={`forecast-${days}`}>
-                    <Subtitle isSize={3} style={{ color }}>
-                        <span className='is-hidden-touch is-hidden-desktop-only'>
-                            {moment.unix(dt).format("dddd")}
-                        </span>
-                        <span className='is-hidden-widescreen'>
-                            {moment.unix(dt).format("ddd")}
-                        </span>
-                    </Subtitle>
-                    <Skycon
-                        iconName={iconName}
-                        color={color}
-                        description={description}
-                    />
-                    <Columns isCentered isVCentered>
-                        <Column>
-                            <Subtitle isSize={4} style={{ color }}>
-                                {temp_max}°
+                    return (
+                        <Column key={`forecast-${days}`}>
+                            <Subtitle isSize={3} style={{ color }}>
+                                <span className='is-hidden-touch is-hidden-desktop-only'>
+                                    {moment.unix(dt).format("dddd")}
+                                </span>
+                                <span className='is-hidden-widescreen'>
+                                    {moment.unix(dt).format("ddd")}
+                                </span>
                             </Subtitle>
-                        </Column>
-                        {/* <Column>
+                            <Skycon
+                                iconName={iconName}
+                                color={color}
+                                description={description}
+                            />
+                            <Columns isCentered isVCentered>
+                                <Column>
+                                    <Subtitle isSize={4} style={{ color }}>
+                                        {temp_max}°
+                                    </Subtitle>
+                                </Column>
+                                {/* <Column>
                             <Subtitle isSize={5} style={{ color }}>
                                 {temp_min}°
                             </Subtitle>
                         </Column> */}
-                    </Columns>
-                </Column>
-            );
-        });
+                            </Columns>
+                        </Column>
+                    );
+                })}
+            </Columns>
+        );
 
         loading = null;
     }
 
+    if (coords) {
+        let { city, region, country } = coords;
+        location = (
+            <Columns isCentered isHidden='mobile'>
+                <Column>
+                    <Subtitle isSize={4} style={{ color }}>
+                        {city}, {region}, {country}
+                    </Subtitle>
+                </Column>
+            </Columns>
+        );
+    }
+
     return (
         <>
-            <Columns isCentered isHidden='mobile'>
-                {forecastContent}
-            </Columns>
-            {loading}
+            {/* <Animate appear='fadeIn' leave='fadeOutDown'>{loading}</Animate> */}
+            <Animate change='fadeIn' durationAppear={1000}>
+                <div style={{ height: "306.667px" }}>
+                    {forecastContent}
+                    {location}
+                </div>
+            </Animate>
         </>
     );
 };

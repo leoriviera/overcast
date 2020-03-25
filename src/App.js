@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Container, Hero, HeroBody, HeroFooter } from "bloomer";
+import { Container, Hero, HeroBody } from "bloomer";
 import moment from "moment";
 import Cookies from "js-cookie";
 
@@ -134,7 +134,7 @@ class App extends Component {
                 tomorrow.setHours(0, 0, 0, 0);
 
                 // Set IP, coords, forecast to cookies
-                Cookies.set("ip", ip);
+                Cookies.set("ip", queryIp);
                 Cookies.set("coords", coords, {
                     expires: tomorrow
                 });
@@ -157,7 +157,8 @@ class App extends Component {
             let today = forecast.shift();
 
             // Set the current forecast to an empty entry
-            let currentForecast = {};
+            let currentForecast =
+                today.length > 0 ? today[today.length - 1] : {};
 
             // If there is more than one entry for today
             if (today.length > 0) {
@@ -181,6 +182,10 @@ class App extends Component {
 
             // Add the forecast to the front of the array
             forecast.unshift(currentForecast);
+
+            if (forecast.length > 5) {
+                forecast.pop();
+            }
 
             // Set coordinates and forecast to state
             this.setState({
@@ -208,15 +213,15 @@ class App extends Component {
                 style={{ background: background, textColor: text }}>
                 <HeroBody>
                     <Container hasTextAlign='centered'>
-                        <Clock colour={text} coords={coords} />
+                        <Clock colour={text} />
                         <Weather
                             colour={text}
                             forecast={forecast}
+                            coords={coords}
                             error={error}
                         />
                     </Container>
                 </HeroBody>
-                {/* <HeroFooter>Designed by Voxa</HeroFooter> */}
             </Hero>
         );
     }
