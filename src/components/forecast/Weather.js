@@ -89,7 +89,7 @@ const Weather = ({ colour: color, forecast, coords, error }) => {
         801: "partly-cloudy-day",
         802: "partly-cloudy-day",
         803: "cloudy",
-        804: "cloudy"
+        804: "cloudy",
     };
 
     let message = null;
@@ -131,13 +131,17 @@ const Weather = ({ colour: color, forecast, coords, error }) => {
         // Replace forecast content with forecast
         forecastContent = (
             <Columns isCentered isHidden='mobile'>
-                {forecast.map((forecast, days) => {
+                {forecast.map((dayForecast, days) => {
+                    if (Object.keys(dayForecast).length === 0) {
+                        return null;
+                    }
+
                     // Destructure forecast
                     let {
                         dt,
                         weather,
-                        main: { temp_min, temp_max }
-                    } = forecast;
+                        main: { temp_min, temp_max },
+                    } = dayForecast;
 
                     // Round the temperatures to nearest integer
                     temp_min = Math.round(temp_min);

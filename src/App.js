@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
-import { Container, Hero, HeroBody } from "bloomer";
+import { Container, Hero, HeroBody, HeroFooter, Button } from "bloomer";
+import download from "downloadjs";
 import moment from "moment";
 import Cookies from "js-cookie";
 
@@ -21,6 +22,7 @@ class App extends Component {
         // Generate two arrays, containing three random numbers
         let initColour = [randGen(), randGen(), randGen()];
         let finColour = [randGen(), randGen(), randGen()];
+        let angle = randGen(180);
 
         // Determine the colour of the text from the intial and final colours
         let textColour = () => {
@@ -43,7 +45,7 @@ class App extends Component {
 
         // Generate string for the background colour
         let backgroundColour = () => {
-            return `linear-gradient(${randGen(180)}deg, rgb(${initColour.join(
+            return `linear-gradient(${angle}deg, rgb(${initColour.join(
                 ","
             )}), rgb(${finColour.join(",")}))`;
         };
@@ -55,9 +57,12 @@ class App extends Component {
         this.state = {
             settings: { text: textColour() },
             background: backgroundColour(),
+            initColour,
+            finColour,
+            angle,
             forecast: null,
             coords: null,
-            error: null
+            error: null,
         };
     }
 
@@ -80,7 +85,7 @@ class App extends Component {
                 longitude: lon,
                 city,
                 region,
-                country_name: country
+                country_name: country,
             } = await ipLookupResponse.json();
 
             console.log(queryIp);
@@ -91,7 +96,7 @@ class App extends Component {
                 coords = {
                     city,
                     region,
-                    country
+                    country,
                 };
 
                 // Fetch the weather forecast
@@ -101,6 +106,8 @@ class App extends Component {
 
                 // Destructure response
                 let { list: forecastList } = await forecastResponse.json();
+
+                console.log(forecastList)
 
                 // Get today's forecasts in array
                 let todayForecast = forecastList.filter((entry) =>
@@ -121,7 +128,7 @@ class App extends Component {
                 // For the next week, fetch each entry at 12 noon
                 for (
                     let i = todayForecast.length + 4;
-                    i < daysRemaining * 8;
+                    i < daysRemaining * 8 + 4;
                     i += 8
                 ) {
                     forecast.push(forecastList[i]);
@@ -136,10 +143,10 @@ class App extends Component {
                 // Set IP, coords, forecast to cookies
                 Cookies.set("ip", queryIp);
                 Cookies.set("coords", coords, {
-                    expires: tomorrow
+                    expires: tomorrow,
                 });
                 Cookies.set("forecast", forecast, {
-                    expires: tomorrow
+                    expires: tomorrow,
                 });
             }
 
@@ -150,7 +157,7 @@ class App extends Component {
 
             // Set the error to state
             this.setState({
-                error
+                error,
             });
         } finally {
             // Unshift today's forecasts
@@ -190,15 +197,46 @@ class App extends Component {
             // Set coordinates and forecast to state
             this.setState({
                 coords: coords,
-                forecast: forecast
+                forecast: forecast,
             });
         }
+    };
+
+    calculateGradient = () => {
+        let { initColour, finColour, angle } = this.state;
+        console.log(angle);
+        let canvasElement = document.createElement("canvas");
+        let { height, width } = window.screen;
+
+        let aspectRatio = height / width;
+
+        canvasElement.width = width;
+        canvasElement.height = height;
+        angle = angle * (Math.PI / 180);
+
+        let x0 = width * 0.5 + Math.cos(angle) * width * 0.5;
+        let y0 = height * 0.5 + Math.sin(angle) * width * 0.5 * aspectRatio;
+        let x1 = width * 0.5 - Math.cos(angle) * width * 0.5;
+        let y1 = height * 0.5 - Math.sin(angle) * width * 0.5 * aspectRatio;
+
+        let context = canvasElement.getContext("2d");
+
+        let gradient = context.createLinearGradient(x0, y0, x1, y1);
+        gradient.addColorStop(0, `rgb(${initColour.join(",")})`);
+        gradient.addColorStop(1, `rgb(${finColour.join(",")})`);
+
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, width, height);
+
+        let imgString = canvasElement.toDataURL("image/png");
+
+        download(imgString, "gradient.png");
     };
 
     // Update a setting
     updateSettings = (settings) => {
         this.setState({
-            settings
+            settings,
         });
     };
 
@@ -222,6 +260,18 @@ class App extends Component {
                         />
                     </Container>
                 </HeroBody>
+                {/* <HeroFooter>
+                    <Button
+                        isColor='black'
+                        style={{
+                            backgroundColor: "transparent",
+                            border: "none",
+                            outline: "none",
+                        }}
+                        onClick={this.calculateGradient}>
+                        Download Background
+                    </Button>
+                </HeroFooter> */}
             </Hero>
         );
     }
