@@ -4,6 +4,7 @@ import { Container, Hero, HeroBody, HeroFooter, Button } from "bloomer";
 import download from "downloadjs";
 import moment from "moment";
 import Cookies from "js-cookie";
+import Hotkeys from "react-hot-keys";
 
 import config from "./config";
 
@@ -107,7 +108,7 @@ class App extends Component {
                 // Destructure response
                 let { list: forecastList } = await forecastResponse.json();
 
-                console.log(forecastList)
+                console.log(forecastList);
 
                 // Get today's forecasts in array
                 let todayForecast = forecastList.filter((entry) =>
@@ -202,7 +203,7 @@ class App extends Component {
         }
     };
 
-    calculateGradient = () => {
+    saveGradient = () => {
         let { initColour, finColour, angle } = this.state;
         console.log(angle);
         let canvasElement = document.createElement("canvas");
@@ -212,16 +213,17 @@ class App extends Component {
 
         canvasElement.width = width;
         canvasElement.height = height;
+
         angle = angle * (Math.PI / 180);
 
         let x0 = width * 0.5 + Math.cos(angle) * width * 0.5;
         let y0 = height * 0.5 + Math.sin(angle) * width * 0.5 * aspectRatio;
-        let x1 = width * 0.5 - Math.cos(angle) * width * 0.5;
-        let y1 = height * 0.5 - Math.sin(angle) * width * 0.5 * aspectRatio;
+        let x1 = Math.cos(angle) * width;
+        let y1 = Math.sin(angle) * width;
 
         let context = canvasElement.getContext("2d");
 
-        let gradient = context.createLinearGradient(x0, y0, x1, y1);
+        let gradient = context.createLinearGradient(0, 0, x1, y1);
         gradient.addColorStop(0, `rgb(${initColour.join(",")})`);
         gradient.addColorStop(1, `rgb(${finColour.join(",")})`);
 
@@ -246,33 +248,23 @@ class App extends Component {
         let { text } = settings;
 
         return (
-            <Hero
-                isFullHeight
-                style={{ background: background, textColor: text }}>
-                <HeroBody>
-                    <Container hasTextAlign='centered'>
-                        <Clock colour={text} />
-                        <Weather
-                            colour={text}
-                            forecast={forecast}
-                            coords={coords}
-                            error={error}
-                        />
-                    </Container>
-                </HeroBody>
-                {/* <HeroFooter>
-                    <Button
-                        isColor='black'
-                        style={{
-                            backgroundColor: "transparent",
-                            border: "none",
-                            outline: "none",
-                        }}
-                        onClick={this.calculateGradient}>
-                        Download Background
-                    </Button>
-                </HeroFooter> */}
-            </Hero>
+            <Hotkeys keyName='ctrl+alt+s' onKeyUp={this.saveGradient}>
+                <Hero
+                    isFullHeight
+                    style={{ background: background, textColor: text }}>
+                    <HeroBody>
+                        <Container hasTextAlign='centered'>
+                            <Clock colour={text} />
+                            <Weather
+                                colour={text}
+                                forecast={forecast}
+                                coords={coords}
+                                error={error}
+                            />
+                        </Container>
+                    </HeroBody>
+                </Hero>
+            </Hotkeys>
         );
     }
 }
