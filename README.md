@@ -23,10 +23,5 @@ Builds the app for production to the `build` folder, correctly bundling React in
 
 A config.js file in the `src` folder contains private keys for libraries and configuration settings for Overcast. Right now, this includes:
 
-### API_KEY
-
-The OpenWeatherAPI API key.
-
-### SENTRY_DSN
-
-The DSN for the app's Sentry project
+- `API_KEY`: The OpenWeatherAPI API key.
+- `SENTRY_DSN`: The DSN for the app's Sentry project
