@@ -1,5 +1,5 @@
 import React, { createRef, useEffect } from "react";
-import { Columns, Column, Subtitle, Level } from "bloomer";
+import { Columns, Column, Subtitle } from "bloomer";
 
 import moment from "moment";
 import { BeatLoader } from "react-spinners";
@@ -117,7 +117,7 @@ const Weather = ({ colour: color, forecast, coords, error }) => {
 
     // Create forecast content, with message
     let forecastContent = (
-        <Columns>
+        <Columns isVCentered style={{ height: "100%" }}>
             <Column>
                 <Subtitle isSize={4} style={{ color }}>
                     {message}
@@ -130,7 +130,7 @@ const Weather = ({ colour: color, forecast, coords, error }) => {
     if (forecast) {
         // Replace forecast content with forecast
         forecastContent = (
-            <Columns isCentered isHidden='mobile'>
+            <Columns isCentered isVCentered isHidden='mobile'>
                 {forecast.map((dayForecast, days) => {
                     if (Object.keys(dayForecast).length === 0) {
                         return null;
