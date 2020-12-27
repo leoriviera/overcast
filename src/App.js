@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Container, Hero, HeroBody, HeroFooter, Button } from "bloomer";
+import { Container, Hero, HeroBody } from "bloomer";
 import download from "downloadjs";
 import moment from "moment";
 import Cookies from "js-cookie";
@@ -151,16 +151,6 @@ class App extends Component {
                 });
             }
 
-            // console.log(forecast);
-        } catch (error) {
-            // Print the error to the console
-            console.log(error);
-
-            // Set the error to state
-            this.setState({
-                error,
-            });
-        } finally {
             // Unshift today's forecasts
             let today = forecast.shift();
 
@@ -199,6 +189,16 @@ class App extends Component {
             this.setState({
                 coords: coords,
                 forecast: forecast,
+            });
+
+            // console.log(forecast);
+        } catch (error) {
+            // Print the error to the console
+            console.log(error);
+
+            // Set the error to state
+            this.setState({
+                error,
             });
         }
     };
