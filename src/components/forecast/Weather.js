@@ -155,13 +155,11 @@ const Weather = ({ colour: color, forecast, coords, error }) => {
 
                     return (
                         <Column key={`forecast-${days}`}>
-                            <Subtitle isSize={3} style={{ color }}>
-                                <span className='is-hidden-touch is-hidden-desktop-only'>
-                                    {moment.unix(dt).format("dddd")}
-                                </span>
-                                <span className='is-hidden-widescreen'>
-                                    {moment.unix(dt).format("ddd")}
-                                </span>
+                            <Subtitle
+                                isSize={3}
+                                style={{ color }}
+                                className='is-hidden-desktop-only'>
+                                <span>{moment.unix(dt).format("dddd")}</span>
                             </Subtitle>
                             <Skycon
                                 iconName={iconName}
